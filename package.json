@@ -1,0 +1,38 @@
+{
+  "name": "chat-animator",
+  "version": "1.0.0",
+  "description": "Animated chat screenshot maker using Remotion",
+  "main": "index.js",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render WhatsAppChat out/whatsapp.mp4",
+    "build:imessage": "remotion render iMessageChat out/imessage.mp4",
+    "build:messenger": "remotion render MessengerChat out/messenger.mp4",
+    "build:all": "npm run build && npm run build:imessage && npm run build:messenger",
+    "build:gif": "remotion render WhatsAppChat out/whatsapp.gif --image-format=png",
+    "upgrade": "remotion upgrade"
+  },
+  "keywords": [
+    "remotion",
+    "chat",
+    "animation",
+    "whatsapp",
+    "imessage",
+    "messenger"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/bundler": "^4.0.409",
+    "@remotion/cli": "^4.0.409",
+    "@remotion/zod-types": "^4.0.409",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "remotion": "^4.0.409",
+    "typescript": "^5.9.3",
+    "zod": "^3.22.3"
+  }
+}
