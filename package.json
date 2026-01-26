@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion render WhatsAppChat out/whatsapp.mp4",
+    "build": "remotion bundle --public-dir=public",
+    "build:video": "remotion render WhatsAppChat out/whatsapp.mp4",
     "build:imessage": "remotion render iMessageChat out/imessage.mp4",
     "build:messenger": "remotion render MessengerChat out/messenger.mp4",
-    "build:all": "npm run build && npm run build:imessage && npm run build:messenger",
+    "build:all": "npm run build:video && npm run build:imessage && npm run build:messenger",
     "build:gif": "remotion render WhatsAppChat out/whatsapp.gif --image-format=png",
     "upgrade": "remotion upgrade"
   },
