@@ -6,3 +6,6 @@ out/
 .env.local
 dist/
 build/
+
+# Local Netlify folder
+.netlify

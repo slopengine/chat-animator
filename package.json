@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion bundle --public-dir=public",
+    "dev": "vite",
+    "build": "vite build",
+    "build:remotion": "remotion bundle --public-dir=public",
     "build:video": "remotion render WhatsAppChat out/whatsapp.mp4",
     "build:imessage": "remotion render iMessageChat out/imessage.mp4",
     "build:messenger": "remotion render MessengerChat out/messenger.mp4",
@@ -23,17 +25,23 @@
   ],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "type": "commonjs",
   "dependencies": {
     "@remotion/bundler": "^4.0.409",
     "@remotion/cli": "^4.0.409",
+    "@remotion/player": "^4.0.410",
     "@remotion/zod-types": "^4.0.409",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "remotion": "^4.0.409",
     "typescript": "^5.9.3",
+    "vite": "^7.3.1",
     "zod": "^3.22.3"
   }
 }
