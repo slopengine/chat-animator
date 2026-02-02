@@ -4,10 +4,9 @@
   "description": "Animated chat screenshot maker using Remotion",
   "main": "index.js",
   "scripts": {
-    "start": "remotion studio",
-    "dev": "vite",
+    "start": "remotion studio --port 4200 --ipv4",
+    "dev": "remotion studio --port 4200 --ipv4",
     "build": "remotion bundle --public-dir=public --out-dir=dist",
-    "build:web": "vite build",
     "build:video": "remotion render WhatsAppChat out/whatsapp.mp4",
     "build:imessage": "remotion render iMessageChat out/imessage.mp4",
     "build:messenger": "remotion render MessengerChat out/messenger.mp4",
