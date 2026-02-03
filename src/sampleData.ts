@@ -1,68 +1,184 @@
-import { ChatConfig, ChatMessage, User } from './types';
+import { ChatConfig, User, groupChatColors } from './types';
 
-// Sample users
-export const sampleUsers: User[] = [
-  {
-    id: 'me',
-    name: 'Me',
-    isMe: true,
-  },
-  {
-    id: 'alice',
-    name: 'Alice',
-    isMe: false,
-  },
-];
+// Sample users - matching Figma design
+export const anikaShavan: User = {
+  id: 'anika',
+  name: 'Anika Shavan',
+  isMe: false,
+};
 
-// Sample WhatsApp conversation
+export const me: User = {
+  id: 'me',
+  name: 'Me',
+  isMe: true,
+};
+
+// Group chat users (from Figma "Lunch Club")
+export const jordan: User = {
+  id: 'jordan',
+  name: 'Jordan',
+  isMe: false,
+  nameColor: groupChatColors[0], // Pink
+};
+
+export const moshe: User = {
+  id: 'moshe',
+  name: 'Moshe',
+  isMe: false,
+  nameColor: groupChatColors[1], // Teal
+};
+
+// Sample WhatsApp conversation - matching Figma "Chat A"
 export const whatsappConversation: ChatConfig = {
   platform: 'whatsapp',
-  users: sampleUsers,
-  typingDuration: 45, // ~1.5 seconds at 30fps
-  messageDelay: 30, // ~1 second between messages
-  initialDelay: 30, // Start after 1 second
+  users: [me, anikaShavan],
+  chatTitle: 'Anika Shavan',
+  chatSubtitle: 'online',
+  typingDuration: 45,
+  messageDelay: 30,
+  initialDelay: 30,
   messages: [
     {
       id: '1',
-      sender: sampleUsers[1], // Alice
-      content: 'Hey! Did you see the new update? 🎉',
-      timestamp: '9:41 AM',
+      sender: anikaShavan,
+      content: '10am coffee?',
+      timestamp: '11:53',
       type: 'text',
     },
     {
       id: '2',
-      sender: sampleUsers[0], // Me
-      content: 'Not yet! What changed?',
-      timestamp: '9:41 AM',
+      sender: me,
+      content: 'Needed! at the usual? ☕',
+      timestamp: '11:59',
       type: 'text',
     },
     {
       id: '3',
-      sender: sampleUsers[1], // Alice
-      content: 'They added dark mode finally! It looks amazing',
-      timestamp: '9:42 AM',
+      sender: anikaShavan,
+      content: 'See you there',
+      timestamp: '12:04',
+      type: 'text',
+    },
+  ],
+};
+
+// Sample WhatsApp conversation B - more messages
+export const whatsappConversationB: ChatConfig = {
+  platform: 'whatsapp',
+  users: [me, anikaShavan],
+  chatTitle: 'Anika Shavan',
+  chatSubtitle: 'online',
+  typingDuration: 45,
+  messageDelay: 30,
+  initialDelay: 30,
+  messages: [
+    {
+      id: '1',
+      sender: me,
+      content: 'Have you watched any of it?',
+      timestamp: '11:50',
+      type: 'text',
+    },
+    {
+      id: '2',
+      sender: anikaShavan,
+      content: 'Yeah that show is great',
+      timestamp: '11:53',
+      type: 'text',
+    },
+    {
+      id: '3',
+      sender: me,
+      content: 'Needed! at the usual? ☕',
+      timestamp: '11:59',
       type: 'text',
     },
     {
       id: '4',
-      sender: sampleUsers[0], // Me
-      content: "Nice! I've been waiting for that forever",
-      timestamp: '9:42 AM',
+      sender: anikaShavan,
+      content: 'Free to meet up this week?',
+      timestamp: '09:53',
       type: 'text',
     },
     {
       id: '5',
-      sender: sampleUsers[1], // Alice
-      content: 'Same here! Want to try it out together later?',
-      timestamp: '9:43 AM',
+      sender: me,
+      content: "Yeah, I'm free most days. What did you have in mind?",
+      timestamp: '10:59',
       type: 'text',
     },
     {
       id: '6',
-      sender: sampleUsers[0], // Me
-      content: 'Sounds good! 👍',
-      timestamp: '9:43 AM',
+      sender: anikaShavan,
+      content: 'I was thinking we could grab coffee at that new cafe',
+      timestamp: '11:02',
       type: 'text',
+    },
+    {
+      id: '7',
+      sender: me,
+      content: "Sounds great! I've heard good things about it the Matcha",
+      timestamp: '10:59',
+      type: 'text',
+    },
+    {
+      id: '8',
+      sender: anikaShavan,
+      content: "How about Wednesday afternoon? I'm free after 2 PM",
+      timestamp: '11:35',
+      type: 'text',
+    },
+    {
+      id: '9',
+      sender: me,
+      content: 'Sure',
+      timestamp: '10:59',
+      type: 'text',
+    },
+  ],
+};
+
+// Sample Group Chat - matching Figma "Lunch Club"
+export const groupChatConversation: ChatConfig = {
+  platform: 'whatsapp',
+  users: [me, jordan, moshe],
+  chatTitle: 'Lunch Club',
+  chatSubtitle: 'Jordan, Moshe, You',
+  isGroupChat: true,
+  typingDuration: 45,
+  messageDelay: 30,
+  initialDelay: 30,
+  messages: [
+    {
+      id: 'system-1',
+      sender: jordan,
+      content: '',
+      systemText: 'Jordan created this group',
+      timestamp: '',
+      type: 'system',
+    },
+    {
+      id: '1',
+      sender: jordan,
+      content: "Let's kick this thing off. Pizza tomorrow??",
+      timestamp: '11:53',
+      type: 'text',
+    },
+    {
+      id: '2',
+      sender: me,
+      content: "I'm free. Would love to see you both!",
+      timestamp: '11:53',
+      type: 'text',
+    },
+    {
+      id: '3',
+      sender: moshe,
+      content: '',
+      timestamp: '11:53',
+      type: 'gif',
+      imageUrl: 'https://media.giphy.com/media/3o7TKsQ8UzvLZHTyJK/giphy.gif',
+      reactions: ['👀'],
     },
   ],
 };
@@ -151,11 +267,19 @@ export const messengerConversation: ChatConfig = {
   ],
 };
 
+// Legacy exports for backwards compatibility
+export const sampleUsers: User[] = [me, anikaShavan];
+
 // Function to calculate required duration based on messages
 export function calculateDuration(config: ChatConfig, fps: number = 30): number {
   let totalFrames = config.initialDelay;
 
   config.messages.forEach((message) => {
+    if (message.type === 'system') {
+      totalFrames += config.messageDelay / 2;
+      return;
+    }
+    
     if (!message.sender.isMe) {
       totalFrames += config.typingDuration + config.messageDelay;
     } else {
@@ -164,7 +288,7 @@ export function calculateDuration(config: ChatConfig, fps: number = 30): number 
   });
 
   // Add some buffer at the end
-  totalFrames += fps * 2; // 2 seconds at the end
+  totalFrames += fps * 2;
 
   return totalFrames;
 }

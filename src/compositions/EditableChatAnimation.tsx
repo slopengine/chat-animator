@@ -1,8 +1,28 @@
 import React, { useMemo } from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
-import { ChatBubble, TypingIndicator, ChatHeader, PhoneFrame, InputBar, WhatsAppBackground } from '../components';
+import { 
+  ChatBubble, 
+  TypingIndicator, 
+  ChatHeader, 
+  PhoneFrame, 
+  InputBar, 
+  WhatsAppBackground,
+  DateSeparator,
+  SystemMessage,
+} from '../components';
 import { ChatMessage, platformThemes, User } from '../types';
-import { ChatSchema, MessageSchema } from '../schema';
+import { MessageSchema } from '../schema';
+
+interface EditableChatProps {
+  platform: 'whatsapp' | 'imessage' | 'messenger';
+  contactName: string;
+  contactAvatar: string;
+  myAvatar: string;
+  showPhoneFrame: boolean;
+  typingSpeed: number;
+  messageSpeed: number;
+  messages: MessageSchema[];
+}
 
 interface MessageTiming {
   message: ChatMessage;
@@ -11,7 +31,11 @@ interface MessageTiming {
   appearFrame: number;
 }
 
-export const EditableChatAnimation: React.FC<ChatSchema> = ({
+/**
+ * Editable chat animation with Remotion Studio props panel.
+ * Matches WhatsApp design from Figma exactly.
+ */
+export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   platform,
   contactName,
   contactAvatar,
@@ -29,7 +53,7 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
   // Convert speed scales (1-10) to frame durations
   const typingDuration = Math.round(90 - (typingSpeed - 1) * 8.33);
   const messageDelay = Math.round(60 - (messageSpeed - 1) * 5);
-  const initialDelay = 20;
+  const initialDelay = 30; // Time for encryption notice + date to appear
 
   // Create users
   const me: User = useMemo(() => ({
@@ -55,7 +79,7 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
       timestamp: msg.timestamp || new Date().toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true,
+        hour12: false,
       }),
       type: 'text' as const,
     }));
@@ -102,7 +126,10 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
     (t) => t.typingStart >= 0 && frame >= t.typingStart && frame < t.typingEnd
   );
 
-  // Messages area content - messages start at top and grow downward
+  // Encryption notice text (from Figma)
+  const encryptionNotice = "Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.";
+
+  // Messages area content
   const messagesArea = (
     <div
       style={{
@@ -111,10 +138,30 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
         padding: '8px 0',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start', // Messages start at top
+        justifyContent: 'flex-start',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* Encryption notice at top (WhatsApp only) */}
+        {isWhatsApp && (
+          <SystemMessage
+            text={encryptionNotice}
+            theme={theme}
+            appearFrame={0}
+            isEncryptionNotice
+          />
+        )}
+
+        {/* Date separator */}
+        {isWhatsApp && (
+          <DateSeparator
+            date="Mon 23 Oct"
+            theme={theme}
+            appearFrame={5}
+          />
+        )}
+
+        {/* Messages */}
         {messageTimings.map((timing) => (
           <ChatBubble
             key={timing.message.id}
@@ -124,6 +171,7 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
           />
         ))}
 
+        {/* Typing indicator */}
         {currentTyping && (
           <TypingIndicator
             theme={theme}
@@ -147,9 +195,14 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       }}
     >
-      <ChatHeader platform={platform} theme={theme} otherUser={contact} />
+      <ChatHeader 
+        platform={platform} 
+        theme={theme} 
+        otherUser={contact}
+        subtitle={isWhatsApp ? 'online' : undefined}
+      />
 
-      {/* Use WhatsApp background with doodle pattern for WhatsApp */}
+      {/* Use WhatsApp background with doodle pattern */}
       {isWhatsApp ? (
         <WhatsAppBackground>
           {messagesArea}
@@ -164,7 +217,7 @@ export const EditableChatAnimation: React.FC<ChatSchema> = ({
 
   if (showPhoneFrame) {
     const padding = 40;
-    const phoneAspectRatio = 0.46;
+    const phoneAspectRatio = 375 / 812; // iPhone aspect ratio from Figma
     const maxPhoneHeight = height - padding * 2;
     const maxPhoneWidth = width - padding * 2;
 
@@ -204,7 +257,7 @@ export function calculateEditableDuration(
 ): number {
   const typingDuration = Math.round(90 - (typingSpeed - 1) * 8.33);
   const messageDelay = Math.round(60 - (messageSpeed - 1) * 5);
-  const initialDelay = 20;
+  const initialDelay = 30; // Account for encryption notice + date
 
   let totalFrames = initialDelay;
 
@@ -219,5 +272,5 @@ export function calculateEditableDuration(
   // Add buffer at the end
   totalFrames += fps * 2;
 
-  return Math.max(totalFrames, fps * 3); // Minimum 3 seconds
+  return Math.max(totalFrames, fps * 3);
 }

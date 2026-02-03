@@ -1,6 +1,8 @@
 export { ChatBubble } from './ChatBubble';
-export { TypingIndicator } from './TypingIndicator';
 export { ChatHeader } from './ChatHeader';
-export { PhoneFrame } from './PhoneFrame';
+export { DateSeparator } from './DateSeparator';
 export { InputBar } from './InputBar';
+export { PhoneFrame } from './PhoneFrame';
+export { SystemMessage } from './SystemMessage';
+export { TypingIndicator } from './TypingIndicator';
 export { WhatsAppBackground } from './WhatsAppBackground';
