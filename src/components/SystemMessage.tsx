@@ -47,7 +47,7 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
         <Img
           src={staticFile('system-message.png')}
           style={{
-            width: 320 * SCALE, // ~920px - fits nicely with margins
+            width: 355 * SCALE, // ~1022px - closer to full width
             height: 'auto',
           }}
         />
