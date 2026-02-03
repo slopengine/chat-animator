@@ -97,30 +97,31 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
       <Img
         src={staticFile('read-receipt.svg')}
         style={{
-          width: 19 * SCALE * 0.9, // ~49px - slightly smaller to match design
-          height: 18 * SCALE * 0.9,
+          width: 19 * SCALE * 1.1, // Larger to match design
+          height: 18 * SCALE * 1.1,
           opacity: checkOpacity,
-          marginLeft: 4 * SCALE,
+          marginLeft: 3 * SCALE,
           flexShrink: 0,
         }}
       />
     );
   };
 
-  // Timestamp - inline at end of message like real WhatsApp
+  // Timestamp - positioned in bottom right corner like real WhatsApp
   const renderTimestamp = () => (
     <span
       style={{
-        fontSize: 11 * SCALE, // 11px in Figma → ~32px
+        fontSize: 13 * SCALE, // Larger timestamp to match design
         color: theme.timestamp,
         opacity: theme.timestampOpacity,
-        marginLeft: 10 * SCALE,
+        marginLeft: 12 * SCALE,
         display: 'inline-flex',
         alignItems: 'center',
-        verticalAlign: 'bottom',
         whiteSpace: 'nowrap',
         float: 'right',
-        marginTop: 2 * SCALE, // Minimal push to align with text baseline
+        marginTop: 6 * SCALE, // Push down to sit in corner
+        position: 'relative',
+        top: 2 * SCALE, // Fine-tune to nestle in corner
       }}
     >
       {message.timestamp}
