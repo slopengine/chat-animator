@@ -6,6 +6,8 @@
   "scripts": {
     "start": "remotion studio --port 4200 --ipv4",
     "dev": "remotion studio --port 4200 --ipv4",
+    "timeline": "vite --config vite.config.ts",
+    "timeline:build": "vite build --config vite.config.ts",
     "build": "remotion bundle --public-dir=public --out-dir=dist",
     "render": "remotion render ChatAnimator out/chat.mp4 --port=4201",
     "render:hq": "remotion render ChatAnimator out/chat.mp4 --crf=15 --x264-preset=slower --port=4201",
@@ -41,5 +43,8 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "zod": "^3.22.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
   }
 }

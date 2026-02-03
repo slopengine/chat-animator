@@ -1,9 +1,11 @@
 export { ChatBubble } from './ChatBubble';
 export { ChatHeader } from './ChatHeader';
 export { DateSeparator } from './DateSeparator';
+export { DraggableTimeline } from './DraggableTimeline';
 export { InputBar } from './InputBar';
 export { PhoneFrame } from './PhoneFrame';
 export { StatusBar } from './StatusBar';
 export { SystemMessage } from './SystemMessage';
+export { Timeline } from './Timeline';
 export { TypingIndicator } from './TypingIndicator';
 export { WhatsAppBackground } from './WhatsAppBackground';

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Sequence } from 'remotion';
 import { 
   ChatBubble, 
   TypingIndicator, 
@@ -20,12 +20,12 @@ interface ExtendedMessageTiming extends MessageTiming {
 
 interface EditableChatProps {
   platform: 'whatsapp' | 'imessage' | 'messenger';
-  contactName: string;
-  contactAvatar: string;
-  myAvatar: string;
-  showPhoneFrame: boolean;
-  typingSpeed: number;
-  messageSpeed: number;
+  contactName?: string;
+  contactAvatar?: string;
+  myAvatar?: string;
+  showPhoneFrame?: boolean;
+  typingSpeed?: number;
+  messageSpeed?: number;
   messages: MessageSchema[];
   showEncryptionNotice?: boolean;
 }
@@ -43,17 +43,17 @@ interface MessageTiming {
  */
 export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   platform,
-  contactName,
-  contactAvatar,
-  myAvatar,
-  showPhoneFrame,
-  typingSpeed,
-  messageSpeed,
+  contactName = 'Contact',
+  contactAvatar = '',
+  myAvatar = '',
+  showPhoneFrame = false,
+  typingSpeed = 5,
+  messageSpeed = 5,
   messages,
   showEncryptionNotice = true,
 }) => {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
+  const { width, height, durationInFrames } = useVideoConfig();
   const theme = platformThemes[platform];
   const isWhatsApp = platform === 'whatsapp';
 
@@ -94,13 +94,49 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   }, [messages, me, contact]);
 
   // Calculate timing for each message
+  // Supports two modes:
+  // 1. Auto-calculated timing (when startFrame is not set)
+  // 2. Manual timing from timeline editor (when startFrame is set)
   const messageTimings = useMemo(() => {
     const timings: ExtendedMessageTiming[] = [];
     let currentFrame = initialDelay;
+    
+    // Check if any message has manual timing
+    const hasManualTiming = messages.some(m => m.startFrame !== undefined);
 
-    chatMessages.forEach((message) => {
+    chatMessages.forEach((message, index) => {
+      const originalMsg = messages[index];
       const isFromOther = !message.sender.isMe;
+      
+      // Use manual timing if specified
+      if (hasManualTiming && originalMsg.startFrame !== undefined) {
+        const manualStart = originalMsg.startFrame;
+        
+        if (isFromOther) {
+          // For "other" messages, typing starts at startFrame - typingDuration
+          const typingStart = Math.max(0, manualStart - typingDuration);
+          const typingEnd = manualStart;
+          
+          timings.push({
+            message,
+            typingStart,
+            typingEnd,
+            appearFrame: manualStart,
+            showDateBefore: message.showDateBefore,
+          });
+        } else {
+          timings.push({
+            message,
+            typingStart: -1,
+            typingEnd: -1,
+            appearFrame: manualStart,
+            showDateBefore: message.showDateBefore,
+          });
+        }
+        return;
+      }
 
+      // Auto-calculate timing (original behavior)
       // Add extra delay for date separator
       if (message.showDateBefore) {
         currentFrame += 15; // Small delay before date separator
@@ -134,7 +170,7 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
     });
 
     return timings;
-  }, [chatMessages, typingDuration, messageDelay, initialDelay]);
+  }, [chatMessages, messages, typingDuration, messageDelay, initialDelay]);
 
   // Get current typing indicator
   const currentTyping = messageTimings.find(
@@ -289,33 +325,67 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
         )}
 
         {/* Messages with date separators */}
-        {messageTimings.map((timing) => (
-          <React.Fragment key={timing.message.id}>
-            {/* Date separator before this message if specified */}
-            {timing.showDateBefore && (
-              <DateSeparator
-                date={timing.showDateBefore}
-                theme={theme}
-                appearFrame={timing.appearFrame - 10}
-              />
-            )}
-            <ChatBubble
-              message={timing.message}
-              theme={theme}
-              appearFrame={timing.appearFrame}
-            />
-          </React.Fragment>
-        ))}
+        {messageTimings.map((timing, index) => {
+          const isMe = timing.message.sender.isMe;
+          const msgText = timing.message.content || '';
+          const truncatedText = msgText.length > 25 ? msgText.slice(0, 25) + '...' : msgText;
+          const sequenceName = `${isMe ? '→ Me' : '← ' + timing.message.sender.name}: ${truncatedText}`;
+          
+          return (
+            <React.Fragment key={timing.message.id}>
+              {/* Date separator before this message if specified */}
+              {timing.showDateBefore && (
+                <Sequence
+                  name={`📅 ${timing.showDateBefore}`}
+                  from={Math.max(0, timing.appearFrame - 10)}
+                  durationInFrames={durationInFrames - Math.max(0, timing.appearFrame - 10)}
+                  layout="none"
+                >
+                  <DateSeparator
+                    date={timing.showDateBefore}
+                    theme={theme}
+                    appearFrame={0}
+                  />
+                </Sequence>
+              )}
+              <Sequence
+                name={sequenceName}
+                from={timing.appearFrame}
+                durationInFrames={durationInFrames - timing.appearFrame}
+                layout="none"
+              >
+                <ChatBubble
+                  message={timing.message}
+                  theme={theme}
+                  appearFrame={0}
+                />
+              </Sequence>
+            </React.Fragment>
+          );
+        })}
 
-        {/* Typing indicator */}
-        {currentTyping && (
-          <TypingIndicator
-            theme={theme}
-            startFrame={currentTyping.typingStart}
-            endFrame={currentTyping.typingEnd}
-            senderName={currentTyping.message.sender.name}
-          />
-        )}
+        {/* Typing indicators - each wrapped in a Sequence */}
+        {messageTimings
+          .filter(t => t.typingStart >= 0)
+          .map((timing, index) => {
+            const typingDuration = timing.typingEnd - timing.typingStart;
+            return (
+              <Sequence
+                key={`typing-${timing.message.id}`}
+                name={`⏳ ${timing.message.sender.name} typing...`}
+                from={timing.typingStart}
+                durationInFrames={typingDuration}
+                layout="none"
+              >
+                <TypingIndicator
+                  theme={theme}
+                  startFrame={0}
+                  endFrame={typingDuration}
+                  senderName={timing.message.sender.name}
+                />
+              </Sequence>
+            );
+          })}
       </div>
     </div>
   );

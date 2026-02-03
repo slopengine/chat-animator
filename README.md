@@ -10,6 +10,7 @@ An animated chat screenshot maker built with [Remotion](https://remotion.dev/). 
 - **Phone Frame**: Optional realistic iPhone-style frame
 - **Multiple Formats**: Portrait (Stories/Reels), Square (Instagram), Landscape (YouTube)
 - **Easy Configuration**: Simple helper function to create conversations
+- **🆕 Timeline Editor**: Visual drag-and-drop timeline for precise timing control
 
 ## Getting Started
 
@@ -25,7 +26,41 @@ npm install
 npm start
 ```
 
-This opens the Remotion Studio at http://localhost:3000 where you can preview all animations.
+This opens the Remotion Studio at http://localhost:4200 where you can preview and edit props via JSON.
+
+### 🎬 Start Timeline Editor (Recommended)
+
+```bash
+npm run timeline
+```
+
+This opens the **Timeline Editor** at http://localhost:4300 - a powerful visual editor that lets you:
+- **Drag message blocks** to adjust timing visually
+- **Resize blocks** to change message duration
+- **Edit messages** inline with instant preview
+- **Edit full JSON props** like in Remotion Studio
+- **Export/Import** configurations
+
+#### Timeline Editor Features
+
+| Feature | Description |
+|---------|-------------|
+| 📱 Live Preview | Real-time WhatsApp-style preview on the left |
+| 🎯 Drag & Drop | Drag message blocks to reposition timing |
+| ↔️ Resize | Drag block edges to adjust duration |
+| 🔍 Zoom | Ctrl+Scroll or +/- buttons to zoom timeline |
+| ⏯️ Transport | Play, pause, step frame-by-frame |
+| ⌨️ Keyboard | Space=play, ←/→=step, Home/End=jump |
+| 💬 Message Tab | Edit text, sender, timestamps |
+| ⚙️ Settings Tab | Platform, contact name, speed settings |
+| { } JSON Tab | Direct JSON editing like Remotion Studio |
+| 📥📤 Import/Export | Save and load configurations |
+
+#### Timeline Color Coding
+- **Green blocks** = Your messages (→ Me)
+- **Teal blocks** = Their messages (← Them)
+- **Red playhead** = Current frame position
+- **Red snap lines** = Snapping guides when dragging
 
 ### Render Videos
 

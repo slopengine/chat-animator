@@ -3,62 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Animator</title>
+    <title>Chat Animator — Timeline Editor</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: #0a0a0a; 
-        color: #fff;
-        min-height: 100vh;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
-      #root { 
-        display: flex; 
-        flex-direction: column;
-        align-items: center; 
-        padding: 2rem;
-        gap: 2rem;
-      }
-      h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, #25D366, #128C7E);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .player-container {
-        border-radius: 24px;
+      
+      html, body {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        background-color: #0f0f0f;
+        color: #ffffff;
         overflow: hidden;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      .controls {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
+      
+      #root {
+        height: 100vh;
+        width: 100vw;
       }
-      button {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
+      
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
       }
-      button.active {
-        background: #25D366;
-        color: white;
+      
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a;
       }
-      button:not(.active) {
+      
+      ::-webkit-scrollbar-thumb {
         background: #333;
-        color: #aaa;
+        border-radius: 4px;
       }
-      button:hover {
-        transform: translateY(-2px);
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: #444;
+      }
+      
+      /* Input styling */
+      input, select, textarea {
+        outline: none;
+      }
+      
+      input:focus, select:focus, textarea:focus {
+        border-color: #25D366 !important;
+      }
+      
+      /* Button hover effects */
+      button:hover:not(:disabled) {
+        filter: brightness(1.1);
+      }
+      
+      button:active:not(:disabled) {
+        filter: brightness(0.95);
+      }
+      
+      /* Selection styling */
+      ::selection {
+        background: rgba(37, 211, 102, 0.3);
       }
     </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/web/main.tsx"></script>
+    <script type="module" src="/src/timeline-editor-entry.tsx"></script>
   </body>
 </html>
