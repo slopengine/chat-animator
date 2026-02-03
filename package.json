@@ -7,11 +7,10 @@
     "start": "remotion studio --port 4200 --ipv4",
     "dev": "remotion studio --port 4200 --ipv4",
     "build": "remotion bundle --public-dir=public --out-dir=dist",
-    "build:video": "remotion render WhatsAppChat out/whatsapp.mp4",
-    "build:imessage": "remotion render iMessageChat out/imessage.mp4",
-    "build:messenger": "remotion render MessengerChat out/messenger.mp4",
-    "build:all": "npm run build:video && npm run build:imessage && npm run build:messenger",
-    "build:gif": "remotion render WhatsAppChat out/whatsapp.gif --image-format=png",
+    "render": "remotion render ChatAnimator out/chat.mp4 --port=4201",
+    "render:hq": "remotion render ChatAnimator out/chat.mp4 --crf=15 --x264-preset=slower --port=4201",
+    "render:fast": "remotion render ChatAnimator out/chat.mp4 --crf=23 --x264-preset=fast --port=4201",
+    "render:gif": "remotion render ChatAnimator out/chat.gif --image-format=png --port=4201",
     "upgrade": "remotion upgrade"
   },
   "keywords": [

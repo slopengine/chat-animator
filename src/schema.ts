@@ -6,6 +6,7 @@ export const messageSchema = z.object({
   text: z.string().describe('Message text'),
   isMe: z.boolean().describe('Sent by me?'),
   timestamp: z.string().optional().describe('Time (e.g., 9:41 AM)'),
+  showDateBefore: z.string().optional().describe('Show date separator before this message (e.g., "Mon 12 May")'),
 });
 
 // Main chat schema for the editable composition
@@ -27,6 +28,9 @@ export const chatSchema = z.object({
 
   // The conversation
   messages: z.array(messageSchema).describe('Messages'),
+  
+  // Optional toggles
+  showEncryptionNotice: z.boolean().default(true).describe('Show E2E encryption notice'),
 });
 
 export type ChatSchema = z.infer<typeof chatSchema>;

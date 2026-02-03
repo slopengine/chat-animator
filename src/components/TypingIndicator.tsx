@@ -25,18 +25,8 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
 
   const relativeFrame = frame - startFrame;
 
-  // Fade in animation
-  const opacity = interpolate(relativeFrame, [0, 5], [0, 1], {
-    extrapolateRight: 'clamp',
-  });
-
-  // Fade out near the end
-  const fadeOut = interpolate(
-    frame,
-    [endFrame - 10, endFrame],
-    [1, 0],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-  );
+  // No fade - just appear and disappear instantly
+  const opacity = 1;
 
   // Animated dots - bounce animation
   const dotAnimationDuration = fps * 0.3; // 300ms per dot cycle
@@ -61,7 +51,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
     marginBottom: 4,
     paddingLeft: 12,
     paddingRight: 120,
-    opacity: opacity * fadeOut,
+    opacity: opacity,
   };
 
   const bubbleStyle: React.CSSProperties = {

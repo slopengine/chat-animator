@@ -1,5 +1,5 @@
 import React from 'react';
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { useCurrentFrame } from 'remotion';
 import { ThemeColors } from '../types';
 
 interface SystemMessageProps {
@@ -21,32 +21,22 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
   isEncryptionNotice = false,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
   const relativeFrame = frame - appearFrame;
 
   if (relativeFrame < 0) {
     return null;
   }
 
-  const scaleProgress = spring({
-    frame: relativeFrame,
-    fps,
-    config: {
-      damping: 20,
-      stiffness: 200,
-      mass: 0.5,
-    },
-  });
-
-  const opacity = interpolate(relativeFrame, [0, 5], [0, 1], {
-    extrapolateRight: 'clamp',
-  });
-
-  const scale = interpolate(scaleProgress, [0, 1], [0.9, 1]);
+  // No animation - just appear instantly
+  const opacity = 1;
+  const scale = 1;
 
   const bgColor = isEncryptionNotice ? theme.e2eBubble : theme.systemBubble;
   const textColor = isEncryptionNotice ? theme.e2eText : theme.systemText;
   const bgOpacity = isEncryptionNotice ? 1 : theme.systemBubbleOpacity;
+
+  // Scale factor: 1080/375 = 2.88
+  const SCALE = 2.88;
 
   return (
     <div
@@ -54,7 +44,7 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '8px 48px',
+        padding: `${8 * SCALE}px ${24 * SCALE}px`,
         opacity,
         transform: `scale(${scale})`,
       }}
@@ -64,10 +54,10 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
           backgroundColor: bgColor,
           opacity: bgOpacity,
           color: textColor,
-          fontSize: 24,
+          fontSize: 13 * SCALE, // ~37px
           fontWeight: 400,
-          padding: '12px 20px',
-          borderRadius: 14,
+          padding: `${8 * SCALE}px ${12 * SCALE}px`,
+          borderRadius: 8 * SCALE,
           boxShadow: '0 1px 1px rgba(11, 20, 26, 0.08)',
           textAlign: 'center',
           lineHeight: 1.4,
@@ -75,20 +65,9 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
         }}
       >
         {isEncryptionNotice && (
-          <span style={{ marginRight: 8 }}>🔒</span>
+          <span style={{ marginRight: 6 * SCALE }}>🔒</span>
         )}
         {text}
-        {isEncryptionNotice && (
-          <span
-            style={{
-              color: '#007BFC',
-              marginLeft: 4,
-              cursor: 'pointer',
-            }}
-          >
-            Learn more
-          </span>
-        )}
       </div>
     </div>
   );

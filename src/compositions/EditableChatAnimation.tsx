@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
 import { 
   ChatBubble, 
   TypingIndicator, 
@@ -14,6 +14,10 @@ import {
 import { ChatMessage, platformThemes, User } from '../types';
 import { MessageSchema } from '../schema';
 
+interface ExtendedMessageTiming extends MessageTiming {
+  showDateBefore?: string;
+}
+
 interface EditableChatProps {
   platform: 'whatsapp' | 'imessage' | 'messenger';
   contactName: string;
@@ -23,6 +27,7 @@ interface EditableChatProps {
   typingSpeed: number;
   messageSpeed: number;
   messages: MessageSchema[];
+  showEncryptionNotice?: boolean;
 }
 
 interface MessageTiming {
@@ -45,6 +50,7 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   typingSpeed,
   messageSpeed,
   messages,
+  showEncryptionNotice = true,
 }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -71,8 +77,8 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
     isMe: false,
   }), [contactName, contactAvatar]);
 
-  // Convert MessageSchema[] to ChatMessage[]
-  const chatMessages: ChatMessage[] = useMemo(() => {
+  // Convert MessageSchema[] to ChatMessage[] with date separator info
+  const chatMessages: (ChatMessage & { showDateBefore?: string })[] = useMemo(() => {
     return messages.map((msg, index) => ({
       id: msg.id || `msg-${index}`,
       sender: msg.isMe ? me : contact,
@@ -83,16 +89,22 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
         hour12: false,
       }),
       type: 'text' as const,
+      showDateBefore: msg.showDateBefore,
     }));
   }, [messages, me, contact]);
 
   // Calculate timing for each message
   const messageTimings = useMemo(() => {
-    const timings: MessageTiming[] = [];
+    const timings: ExtendedMessageTiming[] = [];
     let currentFrame = initialDelay;
 
     chatMessages.forEach((message) => {
       const isFromOther = !message.sender.isMe;
+
+      // Add extra delay for date separator
+      if (message.showDateBefore) {
+        currentFrame += 15; // Small delay before date separator
+      }
 
       if (isFromOther) {
         const typingStart = currentFrame;
@@ -104,6 +116,7 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
           typingStart,
           typingEnd,
           appearFrame,
+          showDateBefore: message.showDateBefore,
         });
 
         currentFrame = appearFrame + messageDelay;
@@ -113,6 +126,7 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
           typingStart: -1,
           typingEnd: -1,
           appearFrame: currentFrame,
+          showDateBefore: message.showDateBefore,
         });
 
         currentFrame += messageDelay;
@@ -130,21 +144,142 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   // Encryption notice text (from Figma)
   const encryptionNotice = "Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.";
 
+  // Scale factor for sizing
+  const SCALE = 2.88;
+  
+  // Component heights (all scaled from 375px Figma design)
+  const STATUS_BAR_HEIGHT = 44 * SCALE; // ~127px
+  const HEADER_HEIGHT = 44 * SCALE; // ~127px
+  // InputBar height (measured from component)
+  const INPUT_BAR_HEIGHT = 66 * SCALE; // ~190px
+  
+  // Measured component heights (all in pixels at 1080px canvas, calculated from actual styles)
+  // DateSeparator: measured from actual rendering
+  const DATE_SEPARATOR_HEIGHT = 130;
+  // SystemMessage: measured from actual rendering  
+  const ENCRYPTION_NOTICE_HEIGHT = 240;
+  // ChatBubble: fine-tuned based on visual testing - includes timestamp space
+  const MESSAGE_BASE_HEIGHT = 135;
+  // Additional height per text line
+  const MESSAGE_LINE_HEIGHT = 64;
+  // Typing indicator uses UNSCALED pixels
+  const TYPING_INDICATOR_HEIGHT = 65;
+  // Desired gap above input bar - increased slightly for timestamp visibility
+  const BOTTOM_PADDING = 52;
+  // Visible area = canvas - status bar - header - input bar
+  const VISIBLE_AREA_HEIGHT = 1920 - STATUS_BAR_HEIGHT - HEADER_HEIGHT - INPUT_BAR_HEIGHT;
+  
+  // Height calculation per message
+  // ~25 chars per line based on: 80% max-width of ~700px, minus padding ~70px = 630px
+  // At fontSize 49px with average char width 0.5*fontSize = 24.5px → ~25 chars/line
+  const getMessageHeight = (text: string) => {
+    const charsPerLine = 25;
+    const lines = Math.ceil(text.length / charsPerLine);
+    return MESSAGE_BASE_HEIGHT + Math.max(0, lines - 1) * MESSAGE_LINE_HEIGHT;
+  };
+
+  // Calculate scroll offset - updates when messages appear or typing starts
+  const currentScrollOffset = useMemo(() => {
+    // Find all messages that have appeared
+    const visibleTimings = messageTimings.filter(t => frame >= t.appearFrame);
+    
+    // Check if typing indicator is currently showing
+    const isTypingVisible = messageTimings.some(
+      t => t.typingStart >= 0 && frame >= t.typingStart && frame < t.typingEnd
+    );
+    
+    if (visibleTimings.length === 0 && !isTypingVisible) return 0;
+    
+    // Calculate total content height for visible messages
+    let totalHeight = 0;
+    
+    // Add encryption notice height if shown
+    if (isWhatsApp && showEncryptionNotice) {
+      totalHeight += ENCRYPTION_NOTICE_HEIGHT;
+    }
+    
+    // Add height for each visible message (based on text length)
+    visibleTimings.forEach((timing) => {
+      if (timing.showDateBefore) {
+        totalHeight += DATE_SEPARATOR_HEIGHT;
+      }
+      totalHeight += getMessageHeight(timing.message.content || '');
+    });
+    
+    // Add typing indicator height if visible
+    if (isTypingVisible) {
+      totalHeight += TYPING_INDICATOR_HEIGHT;
+    }
+    
+    // Add bottom padding to total content height
+    totalHeight += BOTTOM_PADDING;
+    
+    // Calculate target scroll (how much content overflows)
+    const targetScroll = Math.max(0, totalHeight - VISIBLE_AREA_HEIGHT);
+    
+    if (targetScroll === 0) return 0;
+    
+    // Find the most recent message that appeared
+    const lastVisibleTiming = visibleTimings[visibleTimings.length - 1];
+    const scrollTriggerFrame = lastVisibleTiming.appearFrame;
+    
+    // Calculate what the scroll was BEFORE this message appeared
+    let prevHeight = 0;
+    if (isWhatsApp && showEncryptionNotice) {
+      prevHeight += ENCRYPTION_NOTICE_HEIGHT;
+    }
+    visibleTimings.slice(0, -1).forEach((timing) => {
+      if (timing.showDateBefore) {
+        prevHeight += DATE_SEPARATOR_HEIGHT;
+      }
+      prevHeight += getMessageHeight(timing.message.content || '');
+    });
+    // If last message was from "other" (had typing), the typing indicator was visible before
+    if (lastVisibleTiming.typingStart >= 0) {
+      prevHeight += TYPING_INDICATOR_HEIGHT;
+    }
+    prevHeight += BOTTOM_PADDING;
+    const prevScroll = Math.max(0, prevHeight - VISIBLE_AREA_HEIGHT);
+    
+    // Animate from previous scroll to target scroll over 12 frames with smooth ease
+    const scrollProgress = interpolate(
+      frame,
+      [scrollTriggerFrame, scrollTriggerFrame + 12],
+      [0, 1],
+      { 
+        extrapolateLeft: 'clamp', 
+        extrapolateRight: 'clamp',
+        easing: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, // Ease in-out quad
+      }
+    );
+    
+    return prevScroll + (targetScroll - prevScroll) * scrollProgress;
+  }, [frame, messageTimings, isWhatsApp, showEncryptionNotice]);
+
   // Messages area content
   const messagesArea = (
     <div
       style={{
         flex: 1,
         overflowY: 'hidden',
-        padding: '8px 0',
+        overflowX: 'visible', // Allow nubs to extend past container
+        padding: 0, // No extra padding - let content fill the space
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {/* Encryption notice at top (WhatsApp only) */}
-        {isWhatsApp && (
+      <div 
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          transform: `translateY(-${currentScrollOffset}px)`,
+          overflow: 'visible', // Allow nubs to show
+          paddingBottom: BOTTOM_PADDING, // Small padding at bottom
+        }}
+      >
+        {/* Encryption notice at top (WhatsApp only, optional) */}
+        {isWhatsApp && showEncryptionNotice && (
           <SystemMessage
             text={encryptionNotice}
             theme={theme}
@@ -153,23 +288,23 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
           />
         )}
 
-        {/* Date separator */}
-        {isWhatsApp && (
-          <DateSeparator
-            date="Mon 23 Oct"
-            theme={theme}
-            appearFrame={5}
-          />
-        )}
-
-        {/* Messages */}
+        {/* Messages with date separators */}
         {messageTimings.map((timing) => (
-          <ChatBubble
-            key={timing.message.id}
-            message={timing.message}
-            theme={theme}
-            appearFrame={timing.appearFrame}
-          />
+          <React.Fragment key={timing.message.id}>
+            {/* Date separator before this message if specified */}
+            {timing.showDateBefore && (
+              <DateSeparator
+                date={timing.showDateBefore}
+                theme={theme}
+                appearFrame={timing.appearFrame - 10}
+              />
+            )}
+            <ChatBubble
+              message={timing.message}
+              theme={theme}
+              appearFrame={timing.appearFrame}
+            />
+          </React.Fragment>
         ))}
 
         {/* Typing indicator */}

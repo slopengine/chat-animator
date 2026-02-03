@@ -1,5 +1,5 @@
 import React from 'react';
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { useCurrentFrame } from 'remotion';
 import { ThemeColors } from '../types';
 
 interface DateSeparatorProps {
@@ -18,36 +18,26 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({
   appearFrame,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
   const relativeFrame = frame - appearFrame;
 
   if (relativeFrame < 0) {
     return null;
   }
 
-  const scaleProgress = spring({
-    frame: relativeFrame,
-    fps,
-    config: {
-      damping: 20,
-      stiffness: 200,
-      mass: 0.5,
-    },
-  });
+  // No animation - just appear instantly
+  const opacity = 1;
+  const scale = 1;
 
-  const opacity = interpolate(relativeFrame, [0, 5], [0, 1], {
-    extrapolateRight: 'clamp',
-  });
-
-  const scale = interpolate(scaleProgress, [0, 1], [0.8, 1]);
-
+  // Scale factor: 1080/375 = 2.88
+  const SCALE = 2.88;
+  
   return (
     <div
       style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '12px 0',
+        padding: `${12 * SCALE}px 0`,
         opacity,
         transform: `scale(${scale})`,
       }}
@@ -56,10 +46,10 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({
         style={{
           backgroundColor: theme.dateSeparatorBg,
           color: theme.dateSeparatorText,
-          fontSize: 24,
-          fontWeight: 400,
-          padding: '8px 24px',
-          borderRadius: 16,
+          fontSize: 12.5 * SCALE, // ~36px
+          fontWeight: 500,
+          padding: `${6 * SCALE}px ${12 * SCALE}px`,
+          borderRadius: 8 * SCALE,
           boxShadow: '0 1px 1px rgba(11, 20, 26, 0.13)',
           textTransform: 'uppercase',
           letterSpacing: 0.2,
