@@ -3,6 +3,7 @@ export { ChatHeader } from './ChatHeader';
 export { DateSeparator } from './DateSeparator';
 export { InputBar } from './InputBar';
 export { PhoneFrame } from './PhoneFrame';
+export { StatusBar } from './StatusBar';
 export { SystemMessage } from './SystemMessage';
 export { TypingIndicator } from './TypingIndicator';
 export { WhatsAppBackground } from './WhatsAppBackground';

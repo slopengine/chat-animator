@@ -9,6 +9,7 @@ import {
   WhatsAppBackground,
   DateSeparator,
   SystemMessage,
+  StatusBar,
 } from '../components';
 import { ChatMessage, platformThemes, User } from '../types';
 import { MessageSchema } from '../schema';
@@ -192,9 +193,12 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
         height: '100%',
         backgroundColor: theme.background,
         fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+          '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       }}
     >
+      {/* iOS Status Bar */}
+      {isWhatsApp && <StatusBar time="9:41" />}
+      
       <ChatHeader 
         platform={platform} 
         theme={theme} 
