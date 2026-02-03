@@ -107,21 +107,20 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     );
   };
 
-  // Timestamp - nestled in bottom right corner like real WhatsApp
+  // Timestamp - inline at end of message like real WhatsApp
   const renderTimestamp = () => (
     <span
       style={{
         fontSize: 11 * SCALE, // 11px in Figma → ~32px
         color: theme.timestamp,
         opacity: theme.timestampOpacity,
-        marginLeft: 12 * SCALE,
+        marginLeft: 10 * SCALE,
         display: 'inline-flex',
         alignItems: 'center',
-        float: 'right',
-        marginTop: 8 * SCALE, // Push down to nestle in corner
+        verticalAlign: 'bottom',
         whiteSpace: 'nowrap',
-        position: 'relative',
-        top: 4 * SCALE, // Fine-tune vertical alignment
+        float: 'right',
+        marginTop: 2 * SCALE, // Minimal push to align with text baseline
       }}
     >
       {message.timestamp}
@@ -228,10 +227,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
   const nubSize = 15 * SCALE; // 15px nub scaled
   
   const bubbleStyle: React.CSSProperties = {
-    maxWidth: '80%',
+    maxWidth: '88%', // Allow bubbles to go ~2/3 across before wrapping
     padding: message.type === 'image' || message.type === 'gif' 
-      ? `${6 * SCALE}px ${6 * SCALE}px ${10 * SCALE}px ${6 * SCALE}px`
-      : `${10 * SCALE}px ${12 * SCALE}px ${10 * SCALE}px ${12 * SCALE}px`,
+      ? `${6 * SCALE}px ${6 * SCALE}px ${8 * SCALE}px ${6 * SCALE}px`
+      : `${6 * SCALE}px ${12 * SCALE}px ${8 * SCALE}px ${12 * SCALE}px`, // Reduced vertical padding
     // WhatsApp rounded corners - larger radius at nub corner to blend with tail
     borderRadius: isMe 
       ? `${18 * SCALE}px ${18 * SCALE}px ${10 * SCALE}px ${18 * SCALE}px`
@@ -239,7 +238,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     backgroundColor: isMe ? theme.sentBubble : theme.receivedBubble,
     color: isMe ? theme.sentText : theme.receivedText,
     fontSize: 17 * SCALE, // 17px in Figma → ~49px
-    lineHeight: 1.35,
+    lineHeight: 1.3, // Slightly tighter line height
     wordWrap: 'break-word',
     transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
     opacity,
@@ -295,13 +294,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
   // Container with scaled padding (2.88x) - WhatsApp standard margins
   const SCALE_C = 2.88;
   const edgePadding = 10 * SCALE_C;  // ~29px breathing room on both edges
+  const oppositeEdgePadding = 40 * SCALE_C; // ~115px - allows bubbles to go ~2/3 across
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-end',
     marginBottom: 3 * SCALE_C,
-    paddingLeft: isMe ? 60 * SCALE_C : edgePadding,
-    paddingRight: isMe ? edgePadding : 60 * SCALE_C,
+    paddingLeft: isMe ? oppositeEdgePadding : edgePadding,
+    paddingRight: isMe ? edgePadding : oppositeEdgePadding,
     justifyContent: isMe ? 'flex-end' : 'flex-start',
   };
 
