@@ -194,14 +194,16 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
   const DATE_SEPARATOR_HEIGHT = 130;
   // SystemMessage: measured from actual rendering  
   const ENCRYPTION_NOTICE_HEIGHT = 240;
-  // ChatBubble: fine-tuned based on visual testing - includes timestamp space
-  const MESSAGE_BASE_HEIGHT = 135;
-  // Additional height per text line
-  const MESSAGE_LINE_HEIGHT = 64;
+  // ChatBubble: recalculated after padding reduction (6px top, 8px bottom) and tighter line-height (1.3)
+  // Old: 135px base with 10px top/bottom padding, 1.35 line-height
+  // New: ~115px base (17px less vertical padding, ~2.5px less per line)
+  const MESSAGE_BASE_HEIGHT = 115;
+  // Additional height per text line (line-height 1.3 * 49px fontSize = ~64px, reduced from 1.35)
+  const MESSAGE_LINE_HEIGHT = 62;
   // Typing indicator uses UNSCALED pixels
   const TYPING_INDICATOR_HEIGHT = 65;
-  // Desired gap above input bar - increased slightly for timestamp visibility
-  const BOTTOM_PADDING = 52;
+  // Desired gap above input bar - target ~50px above input
+  const BOTTOM_PADDING = 50;
   // Visible area = canvas - status bar - header - input bar
   const VISIBLE_AREA_HEIGHT = 1920 - STATUS_BAR_HEIGHT - HEADER_HEIGHT - INPUT_BAR_HEIGHT;
   
