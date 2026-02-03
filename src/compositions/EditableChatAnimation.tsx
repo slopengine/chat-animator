@@ -216,17 +216,12 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
     return MESSAGE_BASE_HEIGHT + Math.max(0, lines - 1) * MESSAGE_LINE_HEIGHT;
   };
 
-  // Calculate scroll offset - updates when messages appear or typing starts
+  // Calculate scroll offset - instant scroll when each message appears
   const currentScrollOffset = useMemo(() => {
     // Find all messages that have appeared
     const visibleTimings = messageTimings.filter(t => frame >= t.appearFrame);
     
-    // Check if typing indicator is currently showing
-    const isTypingVisible = messageTimings.some(
-      t => t.typingStart >= 0 && frame >= t.typingStart && frame < t.typingEnd
-    );
-    
-    if (visibleTimings.length === 0 && !isTypingVisible) return 0;
+    if (visibleTimings.length === 0) return 0;
     
     // Calculate total content height for visible messages
     let totalHeight = 0;
@@ -243,11 +238,6 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
       }
       totalHeight += getMessageHeight(timing.message.content || '');
     });
-    
-    // Add typing indicator height if visible
-    if (isTypingVisible) {
-      totalHeight += TYPING_INDICATOR_HEIGHT;
-    }
     
     // Add bottom padding to total content height
     totalHeight += BOTTOM_PADDING;
@@ -272,22 +262,17 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
       }
       prevHeight += getMessageHeight(timing.message.content || '');
     });
-    // If last message was from "other" (had typing), the typing indicator was visible before
-    if (lastVisibleTiming.typingStart >= 0) {
-      prevHeight += TYPING_INDICATOR_HEIGHT;
-    }
     prevHeight += BOTTOM_PADDING;
     const prevScroll = Math.max(0, prevHeight - VISIBLE_AREA_HEIGHT);
     
-    // Animate from previous scroll to target scroll over 12 frames with smooth ease
+    // Quick 4-frame scroll animation - starts exactly when message appears
     const scrollProgress = interpolate(
       frame,
-      [scrollTriggerFrame, scrollTriggerFrame + 12],
+      [scrollTriggerFrame, scrollTriggerFrame + 4],
       [0, 1],
       { 
         extrapolateLeft: 'clamp', 
         extrapolateRight: 'clamp',
-        easing: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, // Ease in-out quad
       }
     );
     
