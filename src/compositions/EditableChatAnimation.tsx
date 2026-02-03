@@ -311,17 +311,25 @@ export const EditableChatAnimation: React.FC<EditableChatProps> = ({
           flexDirection: 'column',
           transform: `translateY(-${currentScrollOffset}px)`,
           overflow: 'visible', // Allow nubs to show
+          paddingTop: 20, // Spacing from top
           paddingBottom: BOTTOM_PADDING, // Small padding at bottom
         }}
       >
-        {/* Encryption notice at top (WhatsApp only, optional) */}
+        {/* Date separator first, then encryption notice (WhatsApp style) */}
         {isWhatsApp && showEncryptionNotice && (
-          <SystemMessage
-            text={encryptionNotice}
-            theme={theme}
-            appearFrame={0}
-            isEncryptionNotice
-          />
+          <>
+            <DateSeparator
+              date="Today"
+              theme={theme}
+              appearFrame={0}
+            />
+            <SystemMessage
+              text={encryptionNotice}
+              theme={theme}
+              appearFrame={0}
+              isEncryptionNotice
+            />
+          </>
         )}
 
         {/* Messages with date separators */}
