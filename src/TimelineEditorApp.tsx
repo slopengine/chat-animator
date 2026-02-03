@@ -137,9 +137,35 @@ export const TimelineEditorApp: React.FC = () => {
   
   // Resizing state
   const [isResizing, setIsResizing] = useState<'left' | 'right' | null>(null);
+  const [showRenderMenu, setShowRenderMenu] = useState(false);
   
   // Sync JSON text when props change (unless user is editing)
   const [isEditingJson, setIsEditingJson] = useState(false);
+  
+  // Handle render - shows info for now (actual rendering happens via CLI)
+  const handleRender = (format: 'mp4' | 'mp4-hq' | 'gif') => {
+    const commands: Record<string, string> = {
+      'mp4': 'npm run render',
+      'mp4-hq': 'npm run render:hq',
+      'gif': 'npm run render:gif',
+    };
+    const descriptions: Record<string, string> = {
+      'mp4': 'Standard quality MP4',
+      'mp4-hq': 'High quality MP4 (slower)',
+      'gif': 'Animated GIF',
+    };
+    
+    alert(`To render ${descriptions[format]}:\n\n1. Export your JSON config\n2. Run in terminal:\n   ${commands[format]}\n\nOutput will be saved to: out/chat.${format === 'gif' ? 'gif' : 'mp4'}`);
+  };
+  
+  // Close render menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShowRenderMenu(false);
+    if (showRenderMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showRenderMenu]);
   
   useEffect(() => {
     if (!isEditingJson) {
@@ -596,7 +622,7 @@ export const TimelineEditorApp: React.FC = () => {
         </div>
         
         {/* Right: Actions */}
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
             onClick={importJson}
             style={{
@@ -614,15 +640,15 @@ export const TimelineEditorApp: React.FC = () => {
               transition: 'all 0.15s ease',
             }}
           >
-            ↓ Import
+            ↓ Import JSON
           </button>
           <button
             onClick={exportJson}
             style={{
               padding: '8px 14px',
-              backgroundColor: colors.accent,
-              color: colors.text,
-              border: 'none',
+              backgroundColor: colors.bgInput,
+              color: colors.textSecondary,
+              border: `1px solid ${colors.border}`,
               borderRadius: 6,
               cursor: 'pointer',
               fontSize: 12,
@@ -633,8 +659,134 @@ export const TimelineEditorApp: React.FC = () => {
               transition: 'all 0.15s ease',
             }}
           >
-            ↑ Export
+            ↑ Export JSON
           </button>
+          
+          {/* Render Button with Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowRenderMenu(!showRenderMenu)}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: colors.accent,
+                color: colors.text,
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'all 0.15s ease',
+              }}
+            >
+              🎬 Render
+              <span style={{ fontSize: 10, opacity: 0.7 }}>▼</span>
+            </button>
+            
+            {/* Render Dropdown Menu */}
+            {showRenderMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: 4,
+                backgroundColor: colors.bgElevated,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 8,
+                padding: 8,
+                minWidth: 200,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                zIndex: 1000,
+              }}>
+                <div style={{ fontSize: 10, color: colors.textMuted, padding: '4px 8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Export Video
+                </div>
+                <button
+                  onClick={() => { handleRender('mp4'); setShowRenderMenu(false); }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgInput}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <span>📹</span>
+                  <div>
+                    <div style={{ fontWeight: 500 }}>MP4 Video</div>
+                    <div style={{ fontSize: 10, color: colors.textMuted }}>H.264, best compatibility</div>
+                  </div>
+                </button>
+                <button
+                  onClick={() => { handleRender('mp4-hq'); setShowRenderMenu(false); }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgInput}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <span>🎬</span>
+                  <div>
+                    <div style={{ fontWeight: 500 }}>MP4 High Quality</div>
+                    <div style={{ fontSize: 10, color: colors.textMuted }}>Slower, higher quality</div>
+                  </div>
+                </button>
+                <button
+                  onClick={() => { handleRender('gif'); setShowRenderMenu(false); }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    backgroundColor: 'transparent',
+                    color: colors.text,
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.bgInput}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <span>🎞️</span>
+                  <div>
+                    <div style={{ fontWeight: 500 }}>GIF Animation</div>
+                    <div style={{ fontSize: 10, color: colors.textMuted }}>For social sharing</div>
+                  </div>
+                </button>
+                
+                <div style={{ height: 1, backgroundColor: colors.border, margin: '8px 0' }} />
+                
+                <div style={{ fontSize: 10, color: colors.textMuted, padding: '4px 8px' }}>
+                  Renders via Remotion CLI on server
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
       
