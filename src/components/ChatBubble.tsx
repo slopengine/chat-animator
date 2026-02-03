@@ -1,5 +1,5 @@
 import React from 'react';
-import { interpolate, useCurrentFrame, useVideoConfig, Img } from 'remotion';
+import { interpolate, useCurrentFrame, useVideoConfig, Img, staticFile } from 'remotion';
 import { ChatMessage, ThemeColors } from '../types';
 
 interface ChatBubbleProps {
@@ -85,7 +85,8 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     );
   };
 
-  // Blue double checkmark for sent messages (scaled 2.88x)
+  // Blue double checkmark for sent messages using design SVG
+  const SCALE = 2.88;
   const renderCheckmarks = () => {
     if (!isMe) return null;
 
@@ -93,41 +94,34 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     const checkOpacity = relativeFrame >= 15 ? 1 : 0;
 
     return (
-      <svg
-        width="46"
-        height="29"
-        viewBox="0 0 16 11"
-        fill="none"
-        style={{ opacity: checkOpacity, marginLeft: 8, flexShrink: 0 }}
-      >
-        <path
-          d="M11.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-2.405-2.272a.463.463 0 0 0-.336-.146.47.47 0 0 0-.343.146l-.311.31a.445.445 0 0 0-.14.337c0 .136.046.25.14.343l2.996 2.996a.724.724 0 0 0 .512.203.681.681 0 0 0 .496-.203l6.895-8.676a.442.442 0 0 0 .102-.318.392.392 0 0 0-.178-.299l-.253-.203z"
-          fill={theme.readReceipt}
-        />
-        <path
-          d="M15.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-1.152-1.09a.127.127 0 0 0-.14-.051.13.13 0 0 0-.102.114.12.12 0 0 0 .025.09l1.458 1.458a.724.724 0 0 0 .512.203.681.681 0 0 0 .496-.203l6.895-8.676a.442.442 0 0 0 .102-.318.392.392 0 0 0-.178-.299l-.253-.203z"
-          fill={theme.readReceipt}
-        />
-      </svg>
+      <Img
+        src={staticFile('read-receipt.svg')}
+        style={{
+          width: 19 * SCALE * 0.9, // ~49px - slightly smaller to match design
+          height: 18 * SCALE * 0.9,
+          opacity: checkOpacity,
+          marginLeft: 4 * SCALE,
+          flexShrink: 0,
+        }}
+      />
     );
   };
 
-  // Timestamp - positioned inline at end of message like real WhatsApp
-  // Scaled 2.88x from Figma
-  const SCALE_TS = 2.88;
+  // Timestamp - nestled in bottom right corner like real WhatsApp
   const renderTimestamp = () => (
     <span
       style={{
-        fontSize: 11 * SCALE_TS, // 11px in Figma → ~32px
+        fontSize: 11 * SCALE, // 11px in Figma → ~32px
         color: theme.timestamp,
         opacity: theme.timestampOpacity,
-        marginLeft: 8 * SCALE_TS,
+        marginLeft: 12 * SCALE,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 4,
         float: 'right',
-        marginTop: 4 * SCALE_TS,
+        marginTop: 8 * SCALE, // Push down to nestle in corner
         whiteSpace: 'nowrap',
+        position: 'relative',
+        top: 4 * SCALE, // Fine-tune vertical alignment
       }}
     >
       {message.timestamp}
@@ -231,7 +225,6 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
   };
 
   // WhatsApp bubble style - scaled for 1080x1920 (2.88x from 375px Figma)
-  const SCALE = 2.88;
   const nubSize = 15 * SCALE; // 15px nub scaled
   
   const bubbleStyle: React.CSSProperties = {
