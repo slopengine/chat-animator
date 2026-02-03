@@ -8,12 +8,13 @@
     "dev": "remotion studio --port 4200 --ipv4",
     "timeline": "vite --config vite.config.ts",
     "timeline:build": "vite build --config vite.config.ts",
-    "build": "remotion bundle --public-dir=public --out-dir=dist",
+    "build": "vite build",
     "render": "remotion render ChatAnimator out/chat.mp4 --port=4201",
     "render:hq": "remotion render ChatAnimator out/chat.mp4 --crf=15 --x264-preset=slower --port=4201",
     "render:fast": "remotion render ChatAnimator out/chat.mp4 --crf=23 --x264-preset=fast --port=4201",
     "render:gif": "remotion render ChatAnimator out/chat.gif --image-format=png --port=4201",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "build:remotion": "remotion bundle --public-dir=public --out-dir=remotion-dist"
   },
   "keywords": [
     "remotion",
