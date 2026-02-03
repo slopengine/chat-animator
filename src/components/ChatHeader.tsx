@@ -13,8 +13,7 @@ interface ChatHeaderProps {
 }
 
 /**
- * Chat header matching WhatsApp Figma design exactly.
- * Uses outline-style icons like the original.
+ * Chat header with exact SVGs from Figma export via Anima.
  */
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   platform,
@@ -32,13 +31,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const headerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    padding: isWhatsApp ? '10px 16px 10px 4px' : '12px 16px',
+    padding: isWhatsApp ? '8px 12px 8px 8px' : '12px 16px',
     backgroundColor: '#FFFFFF',
     flexShrink: 0,
-    minHeight: isWhatsApp ? 76 : 44,
+    minHeight: isWhatsApp ? 88 : 44,
   };
 
-  const avatarSize = 100;
+  const avatarSize = 72;
 
   const avatarStyle: React.CSSProperties = {
     width: avatarSize,
@@ -53,7 +52,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const renderDefaultAvatar = () => (
-    <svg width={avatarSize * 0.55} height={avatarSize * 0.55} viewBox="0 0 24 24" fill="#8696A0">
+    <svg width={avatarSize * 0.6} height={avatarSize * 0.6} viewBox="0 0 24 24" fill="#8696A0">
       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
     </svg>
   );
@@ -83,16 +82,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     );
   };
 
-  // Back arrow - thin chevron style like Figma (black)
+  // Back arrow - simple chevron like Figma
   const renderBackButton = () => {
     if (platform === 'whatsapp') {
       return (
-        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px 8px 16px' }}>
-          <svg width="22" height="36" viewBox="0 0 11 18" fill="none">
+        <div style={{ display: 'flex', alignItems: 'center', padding: '8px', marginRight: 4 }}>
+          <svg width="24" height="44" viewBox="0 0 12 22" fill="none">
             <path
-              d="M9 2L2 9L9 16"
+              d="M10 2L2 11L10 20"
               stroke="#000000"
-              strokeWidth="2.2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -103,25 +102,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     return null;
   };
 
-  // Video call icon - outline style like Figma
+  // Video icon - exact from Figma export
   const renderVideoIcon = () => (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-      <rect x="2" y="6" width="14" height="12" rx="2" stroke="#54656F" strokeWidth="1.8" fill="none"/>
-      <path d="M16 9.5L21 7V17L16 14.5" stroke="#54656F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <svg width="58" height="56" viewBox="0 0 29 28" fill="none">
+      <path d="M5.78223 23.085C3.16113 23.085 1.59277 21.5596 1.59277 18.9492V9.57129C1.59277 6.9502 3.2793 5.4248 5.78223 5.4248H17.0078C19.6289 5.4248 21.1973 6.9502 21.1973 9.57129V11.043L25.2578 7.60547C25.6875 7.25098 26.1602 7.00391 26.6006 7.00391C27.5459 7.00391 28.1689 7.70215 28.1689 8.70117V19.8086C28.1689 20.8076 27.5459 21.5059 26.6006 21.5059C26.1602 21.5059 25.6875 21.2588 25.2578 20.9043L21.1973 17.4668V18.9492C21.1973 21.5596 19.6289 23.085 17.0078 23.085H5.78223ZM6.08301 21.4736H16.707C18.458 21.4736 19.4678 20.5605 19.4678 18.6914V9.81836C19.4678 7.95996 18.458 7.04688 16.707 7.04688H6.08301C4.32129 7.04688 3.32227 7.95996 3.32227 9.81836V18.6914C3.32227 20.5605 4.32129 21.4736 6.08301 21.4736ZM26.0635 19.4434C26.1602 19.5078 26.2246 19.5723 26.3213 19.5723C26.4502 19.5723 26.5039 19.4648 26.5039 19.3145V9.19531C26.5039 9.04492 26.4502 8.94824 26.3213 8.94824C26.2246 8.94824 26.1602 8.99121 26.0635 9.06641L21.1973 13.084V15.4258L26.0635 19.4434Z" fill="#0A0A0A"/>
     </svg>
   );
 
-  // Phone call icon - outline style like Figma
+  // Phone icon - exact from Figma export  
   const renderPhoneIcon = () => (
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
-        stroke="#54656F"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
+    <svg width="42" height="42" viewBox="0 0 21 21" fill="none">
+      <path d="M15.5977 21.001C14.5736 21.001 13.4886 20.7933 12.3428 20.3779C11.1969 19.9626 10.0296 19.3574 8.84082 18.5625C7.65202 17.7676 6.48828 16.7972 5.34961 15.6514C4.19661 14.5055 3.22266 13.3382 2.42773 12.1494C1.63281 10.9606 1.02767 9.79329 0.612305 8.64746C0.204102 7.49447 0 6.40592 0 5.38184C0 4.76595 0.0572917 4.21094 0.171875 3.7168C0.29362 3.22266 0.479818 2.77148 0.730469 2.36328C0.98112 1.95508 1.31055 1.57194 1.71875 1.21387C1.76172 1.1709 1.80469 1.13151 1.84766 1.0957C1.89779 1.05273 1.94434 1.00977 1.9873 0.966797C2.71061 0.322266 3.40527 0.00716146 4.07129 0.0214844C4.45801 0.0286458 4.8304 0.14681 5.18848 0.375977C5.55371 0.597982 5.90104 0.948893 6.23047 1.42871L8.35742 4.47949C8.62956 4.86621 8.74772 5.27441 8.71191 5.7041C8.67611 6.12663 8.55436 6.5026 8.34668 6.83203L7.37988 8.34668C7.20801 8.61165 7.18652 8.85872 7.31543 9.08789C7.49447 9.39583 7.76302 9.77181 8.12109 10.2158C8.48633 10.6598 8.87305 11.0859 9.28125 11.4941C9.55339 11.7663 9.85059 12.0456 10.1729 12.332C10.4951 12.6113 10.7995 12.8656 11.0859 13.0947C11.3724 13.3167 11.5944 13.4779 11.752 13.5781C11.9095 13.6712 12.0599 13.7214 12.2031 13.7285C12.3464 13.7285 12.5003 13.6927 12.665 13.6211L14.3301 12.8047C14.8457 12.554 15.2969 12.4395 15.6836 12.4609C16.0775 12.4753 16.4785 12.6221 16.8867 12.9014L19.583 14.749C20.0628 15.0785 20.4137 15.4294 20.6357 15.8018C20.8649 16.167 20.9795 16.543 20.9795 16.9297C20.9795 17.2591 20.9007 17.5993 20.7432 17.9502C20.5928 18.2939 20.3564 18.6449 20.0342 19.0029C19.9912 19.0531 19.9482 19.0996 19.9053 19.1426C19.8695 19.1855 19.8301 19.2321 19.7871 19.2822C19.2428 19.891 18.6413 20.3278 17.9824 20.5928C17.3307 20.8649 16.5358 21.001 15.5977 21.001ZM15.6084 19.3682C16.2028 19.3538 16.7507 19.2428 17.252 19.0352C17.7533 18.8275 18.1901 18.5124 18.5625 18.0898C18.5911 18.054 18.6162 18.0218 18.6377 17.9932C18.6663 17.9645 18.695 17.9323 18.7236 17.8965C19.0101 17.5671 19.1533 17.2412 19.1533 16.9189C19.1533 16.7542 19.1175 16.6038 19.0459 16.4678C18.9814 16.3317 18.8704 16.2135 18.7129 16.1133L16.1992 14.4268C16.0273 14.3193 15.8555 14.2549 15.6836 14.2334C15.5189 14.2119 15.3327 14.2477 15.125 14.3408L13.3203 15.2002C12.819 15.4437 12.4036 15.5475 12.0742 15.5117C11.7448 15.4759 11.4189 15.3398 11.0967 15.1035C10.846 14.9316 10.5452 14.7025 10.1943 14.416C9.84342 14.1296 9.48535 13.8252 9.12012 13.5029C8.76204 13.1807 8.44694 12.8835 8.1748 12.6113C7.75944 12.2031 7.33333 11.7305 6.89648 11.1934C6.4668 10.6562 6.09798 10.1836 5.79004 9.77539C5.55371 9.45312 5.42122 9.13802 5.39258 8.83008C5.36393 8.51497 5.46777 8.16764 5.7041 7.78809L6.77832 6.06934C6.97884 5.73275 6.99316 5.43913 6.82129 5.18848L4.8877 2.28809C4.69434 1.99447 4.42578 1.84766 4.08203 1.84766C3.93164 1.84766 3.77051 1.88346 3.59863 1.95508C3.43392 2.02669 3.26921 2.13411 3.10449 2.27734C3.07585 2.30599 3.04362 2.33464 3.00781 2.36328C2.97917 2.38477 2.94694 2.40983 2.91113 2.43848C2.48861 2.81087 2.16992 3.24772 1.95508 3.74902C1.7474 4.24316 1.63997 4.78385 1.63281 5.37109C1.61133 6.28776 1.81901 7.27962 2.25586 8.34668C2.69987 9.40658 3.29785 10.4736 4.0498 11.5479C4.80176 12.6149 5.64681 13.6139 6.58496 14.5449C7.50879 15.4688 8.49349 16.2995 9.53906 17.0371C10.5918 17.7676 11.6374 18.3405 12.6758 18.7559C13.7214 19.1784 14.6989 19.3825 15.6084 19.3682Z" fill="#0A1014"/>
     </svg>
   );
 
@@ -129,17 +120,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     <div style={headerStyle}>
       {renderBackButton()}
       
-      {/* Avatar with more left indent */}
-      <div style={{ marginLeft: 4 }}>
+      {/* Avatar */}
+      <div style={{ marginLeft: 0 }}>
         {renderAvatar()}
       </div>
       
       {/* Name and status */}
-      <div style={{ flex: 1, minWidth: 0, marginLeft: 14 }}>
+      <div style={{ flex: 1, minWidth: 0, marginLeft: 12 }}>
         <div
           style={{
-            fontSize: 38,
-            fontWeight: 500,
+            fontSize: 34,
+            fontWeight: 600,
             color: '#000000',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -153,7 +144,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {displaySubtitle && (
           <div 
             style={{ 
-              fontSize: 28,
+              fontSize: 26,
               color: '#667781',
               marginTop: 2,
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
@@ -164,9 +155,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
       </div>
 
-      {/* Action icons with proper spacing */}
+      {/* Action icons */}
       {platform === 'whatsapp' && (
-        <div style={{ display: 'flex', gap: 16, flexShrink: 0, alignItems: 'center', marginRight: 4 }}>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
           {renderVideoIcon()}
           {renderPhoneIcon()}
         </div>
