@@ -44,7 +44,10 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: `${8 * SCALE}px ${24 * SCALE}px`,
+        paddingTop: 4 * SCALE,
+        paddingBottom: 8 * SCALE,
+        paddingLeft: 24 * SCALE,
+        paddingRight: 24 * SCALE,
         opacity,
         transform: `scale(${scale})`,
       }}

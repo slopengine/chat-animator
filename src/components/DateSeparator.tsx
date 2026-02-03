@@ -37,7 +37,8 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: `${12 * SCALE}px 0`,
+        paddingTop: 20 * SCALE,
+        paddingBottom: 4 * SCALE,
         opacity,
         transform: `scale(${scale})`,
       }}
