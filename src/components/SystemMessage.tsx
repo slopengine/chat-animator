@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCurrentFrame } from 'remotion';
+import { Img, staticFile, useCurrentFrame } from 'remotion';
 import { ThemeColors } from '../types';
 
 interface SystemMessageProps {
@@ -27,16 +27,38 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
     return null;
   }
 
-  // No animation - just appear instantly
-  const opacity = 1;
-  const scale = 1;
-
-  const bgColor = isEncryptionNotice ? theme.e2eBubble : theme.systemBubble;
-  const textColor = isEncryptionNotice ? theme.e2eText : theme.systemText;
-  const bgOpacity = isEncryptionNotice ? 1 : theme.systemBubbleOpacity;
-
   // Scale factor: 1080/375 = 2.88
   const SCALE = 2.88;
+
+  // For encryption notice, use the design image
+  if (isEncryptionNotice) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: 4 * SCALE,
+          paddingBottom: 8 * SCALE,
+          paddingLeft: 16 * SCALE,
+          paddingRight: 16 * SCALE,
+        }}
+      >
+        <Img
+          src={staticFile('system-message.png')}
+          style={{
+            width: 320 * SCALE, // ~920px - fits nicely with margins
+            height: 'auto',
+          }}
+        />
+      </div>
+    );
+  }
+
+  // Regular system message (non-encryption)
+  const bgColor = theme.systemBubble;
+  const textColor = theme.systemText;
+  const bgOpacity = theme.systemBubbleOpacity;
 
   return (
     <div
@@ -48,8 +70,6 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
         paddingBottom: 8 * SCALE,
         paddingLeft: 24 * SCALE,
         paddingRight: 24 * SCALE,
-        opacity,
-        transform: `scale(${scale})`,
       }}
     >
       <div
@@ -57,7 +77,7 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
           backgroundColor: bgColor,
           opacity: bgOpacity,
           color: textColor,
-          fontSize: 13 * SCALE, // ~37px
+          fontSize: 13 * SCALE,
           fontWeight: 400,
           padding: `${8 * SCALE}px ${12 * SCALE}px`,
           borderRadius: 8 * SCALE,
@@ -67,9 +87,6 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({
           maxWidth: '90%',
         }}
       >
-        {isEncryptionNotice && (
-          <span style={{ marginRight: 6 * SCALE }}>🔒</span>
-        )}
         {text}
       </div>
     </div>
