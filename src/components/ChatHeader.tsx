@@ -6,24 +6,15 @@ interface ChatHeaderProps {
   platform: ChatPlatform;
   theme: ThemeColors;
   otherUser: User;
-  /** Custom title (for group chats) */
   title?: string;
-  /** Custom subtitle (for group chats shows member names) */
   subtitle?: string;
-  /** Is this a group chat */
   isGroupChat?: boolean;
-  /** Group avatar (emoji or image) */
   groupAvatar?: string;
 }
 
 /**
- * Chat header matching WhatsApp's exact design from Figma.
- * Features:
- * - Back arrow
- * - Avatar (circular, editable via props)
- * - Contact/group name with proper font
- * - Status/member list
- * - Video call and phone call icons (accurate SVGs)
+ * Chat header matching WhatsApp Figma design exactly.
+ * Uses outline-style icons like the original.
  */
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
   platform,
@@ -38,18 +29,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const displayTitle = title || otherUser.name;
   const displaySubtitle = subtitle || (isWhatsApp ? 'online' : undefined);
 
-  // Main header container (below status bar)
   const headerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    padding: isWhatsApp ? '12px 16px 12px 8px' : '12px 16px',
+    padding: isWhatsApp ? '10px 16px 10px 4px' : '12px 16px',
     backgroundColor: '#FFFFFF',
     flexShrink: 0,
-    minHeight: isWhatsApp ? 72 : 44,
-    borderBottom: '1px solid #E9EDEF',
+    minHeight: isWhatsApp ? 76 : 44,
   };
 
-  const avatarSize = isWhatsApp ? 80 : 36;
+  const avatarSize = 100;
 
   const avatarStyle: React.CSSProperties = {
     width: avatarSize,
@@ -59,22 +48,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#8696A0',
-    fontSize: isWhatsApp ? 32 : 14,
-    fontWeight: 500,
     overflow: 'hidden',
     flexShrink: 0,
   };
 
-  // Default avatar icon (person silhouette) - matches WhatsApp
   const renderDefaultAvatar = () => (
-    <svg width={avatarSize * 0.6} height={avatarSize * 0.6} viewBox="0 0 24 24" fill="#8696A0">
+    <svg width={avatarSize * 0.55} height={avatarSize * 0.55} viewBox="0 0 24 24" fill="#8696A0">
       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
     </svg>
   );
 
   const renderAvatar = () => {
-    // Group chat with emoji avatar
     if (isGroupChat && groupAvatar && !groupAvatar.startsWith('http')) {
       return (
         <div style={avatarStyle}>
@@ -99,15 +83,18 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     );
   };
 
-  // Back arrow - matches WhatsApp exactly
+  // Back arrow - thin chevron style like Figma (black)
   const renderBackButton = () => {
     if (platform === 'whatsapp') {
       return (
-        <div style={{ display: 'flex', alignItems: 'center', marginRight: 4, padding: 8 }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px 8px 16px' }}>
+          <svg width="22" height="36" viewBox="0 0 11 18" fill="none">
             <path
-              d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
-              fill="#000000"
+              d="M9 2L2 9L9 16"
+              stroke="#000000"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </div>
@@ -116,22 +103,24 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     return null;
   };
 
-  // Video call icon - accurate WhatsApp style
+  // Video call icon - outline style like Figma
   const renderVideoIcon = () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"
-        fill="#54656F"
-      />
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="6" width="14" height="12" rx="2" stroke="#54656F" strokeWidth="1.8" fill="none"/>
+      <path d="M16 9.5L21 7V17L16 14.5" stroke="#54656F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
     </svg>
   );
 
-  // Phone call icon - accurate WhatsApp style  
+  // Phone call icon - outline style like Figma
   const renderPhoneIcon = () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
       <path
-        d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
-        fill="#54656F"
+        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
+        stroke="#54656F"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
@@ -139,13 +128,17 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <div style={headerStyle}>
       {renderBackButton()}
-      {renderAvatar()}
+      
+      {/* Avatar with more left indent */}
+      <div style={{ marginLeft: 4 }}>
+        {renderAvatar()}
+      </div>
       
       {/* Name and status */}
-      <div style={{ flex: 1, minWidth: 0, marginLeft: 12 }}>
+      <div style={{ flex: 1, minWidth: 0, marginLeft: 14 }}>
         <div
           style={{
-            fontSize: isWhatsApp ? 36 : 16,
+            fontSize: 38,
             fontWeight: 500,
             color: '#000000',
             whiteSpace: 'nowrap',
@@ -160,12 +153,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {displaySubtitle && (
           <div 
             style={{ 
-              fontSize: isWhatsApp ? 26 : 12, 
+              fontSize: 28,
               color: '#667781',
               marginTop: 2,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
             }}
           >
@@ -174,9 +164,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
       </div>
 
-      {/* Action icons */}
+      {/* Action icons with proper spacing */}
       {platform === 'whatsapp' && (
-        <div style={{ display: 'flex', gap: 20, flexShrink: 0, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, flexShrink: 0, alignItems: 'center', marginRight: 4 }}>
           {renderVideoIcon()}
           {renderPhoneIcon()}
         </div>
