@@ -115,13 +115,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
         color: theme.timestamp,
         opacity: theme.timestampOpacity,
         marginLeft: 12 * SCALE,
+        marginRight: isMe ? -4 * SCALE : 0, // Push closer to right edge for sent messages
         display: 'inline-flex',
         alignItems: 'center',
         whiteSpace: 'nowrap',
         float: 'right',
-        marginTop: 6 * SCALE, // Push down to sit in corner
+        marginTop: 6 * SCALE,
         position: 'relative',
-        top: 2 * SCALE, // Fine-tune to nestle in corner
+        top: 2 * SCALE,
       }}
     >
       {message.timestamp}
@@ -231,7 +232,9 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     maxWidth: '88%', // Allow bubbles to go ~2/3 across before wrapping
     padding: message.type === 'image' || message.type === 'gif' 
       ? `${6 * SCALE}px ${6 * SCALE}px ${8 * SCALE}px ${6 * SCALE}px`
-      : `${6 * SCALE}px ${12 * SCALE}px ${8 * SCALE}px ${12 * SCALE}px`, // Reduced vertical padding
+      : isMe 
+        ? `${6 * SCALE}px ${8 * SCALE}px ${8 * SCALE}px ${12 * SCALE}px` // Sent: less right padding
+        : `${6 * SCALE}px ${12 * SCALE}px ${8 * SCALE}px ${12 * SCALE}px`, // Received: normal padding
     // WhatsApp rounded corners - larger radius at nub corner to blend with tail
     borderRadius: isMe 
       ? `${18 * SCALE}px ${18 * SCALE}px ${10 * SCALE}px ${18 * SCALE}px`
